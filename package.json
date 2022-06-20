@@ -1,10 +1,11 @@
 {
   "scripts": {
-    "serve": "serve build",
-    "build": "bin/build.sh"
+    "build": "build.sh",
+    "serve": "serve build"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.2",
+    "serve": "^13.0.2",
     "tailwindcss": "^3.1.3"
   }
 }
