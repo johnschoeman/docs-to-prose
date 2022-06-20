@@ -3,7 +3,19 @@
 @tailwind utilities;
 
 @layer base {
+  pre {
+    @apply cursor-pointer hover:bg-gray-300;
+  }
+
+  code {
+    @apply px-1 py-0.5 rounded cursor-pointer bg-gray-200 text-gray-900 hover:bg-gray-300;
+  }
+
   .with-prose {
-    @apply px-8 py-2 prose prose-stone prose-code:bg-gray-200 prose-code:rounded prose-code:px-1 prose-code:py-0.5;
+    @apply px-8 py-2 prose prose-pre:rounded-sm prose-pre:bg-gray-200 prose-pre:text-gray-900;
+  }
+
+  .flash-message {
+    @apply text-sm border border-gray-300 rounded-tr fixed bottom-0 left-0 px-2 py-1 text-gray-800 bg-gray-100;
   }
 }

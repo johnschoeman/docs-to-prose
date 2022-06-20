@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./**/*.html"],
+  safelist: ["flash-message"],
   theme: {
     extend: {
       typography: {
