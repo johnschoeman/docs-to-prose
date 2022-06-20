@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .with-prose {
+    @apply px-8 py-2 prose prose-stone prose-code:bg-gray-200 prose-code:rounded prose-code:px-1 prose-code:py-0.5;
+  }
+}
