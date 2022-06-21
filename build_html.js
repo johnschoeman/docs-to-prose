@@ -1,4 +1,6 @@
+const fsAsync = require("fs").promises;
 const fs = require("fs");
+const path = require("path");
 
 // # build_html.js
 //
@@ -48,43 +50,52 @@ const fs = require("fs");
 // results.
 //
 
-const BUILD_DIR = process.argv[2] ?? "build";
+const TARGET_DIR = process.argv[2] ?? "build";
 
-fs.readdir(BUILD_DIR, (err, files) => {
-  const tailwindCSSLinkTag = buildStylesheetTag("./tailwind.css");
-  const clipboardScriptTag = buildScriptTag("./clipboard.min.js");
-  const indexScriptTag = buildScriptTag("./index.js");
-  const headTags = [tailwindCSSLinkTag, clipboardScriptTag];
-  const afterBodyTags = [indexScriptTag];
+const updateAllFiles = async () => {
+  for await (const { file, depth } of getFiles(TARGET_DIR)) {
+    if (isHtmlExt(file)) {
+      const [headTags, bodyTags] = buildTags(depth);
+      const bodyClasses = ["with-prose"];
+      processFile(file, bodyClasses, headTags, bodyTags);
+    }
+  }
+};
 
-  const htmlFiles = files.filter(isHtmlExt);
+updateAllFiles();
 
-  htmlFiles.forEach((file) => {
-    const path = `./${BUILD_DIR}/${file}`;
-    const lines = fs.readFileSync(path).toString().split("\n");
+async function* getFiles(dir, depth = 0) {
+  const dirents = await fsAsync.readdir(dir, { withFileTypes: true });
+  for (const dirent of dirents) {
+    const res = path.resolve(dir, dirent.name);
+    if (dirent.isDirectory()) {
+      yield* getFiles(res, depth + 1);
+    } else {
+      yield { file: res, depth };
+    }
+  }
+}
 
-    const linesWithClass = lines.map((line) => {
-      return isOpenBodyTag(line) ? addClassAttrToTag("with-prose")(line) : line;
-    });
+const processFile = (filePath, bodyClasses, headTags, bodyTags) => {
+  const lines = fs.readFileSync(filePath).toString().split("\n");
 
-    const headIdx = linesWithClass.findIndex(isCloseHeadTag);
-    const linesWithHeadTags = insert(linesWithClass, headIdx, ...headTags);
-
-    const bodyIdx = linesWithHeadTags.findIndex(isCloseBodyTag);
-    const nextLines = insert(linesWithHeadTags, bodyIdx + 1, ...afterBodyTags);
-
-    const fileData = nextLines.join("\n");
-
-    fs.writeFile(path, fileData, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-    });
+  const linesWithClass = lines.map((line) => {
+    return isOpenBodyTag(line) ? addClassAttrToTag(bodyClasses)(line) : line;
   });
-});
 
-const insert = (arr, index, ...newItems) => {
-  return [...arr.slice(0, index), ...newItems, ...arr.slice(index)];
+  const headIdx = linesWithClass.findIndex(isCloseHeadTag);
+  const linesWithHeadTags = insert(linesWithClass, headIdx, ...headTags);
+
+  const bodyIdx = linesWithHeadTags.findIndex(isCloseBodyTag);
+  const nextLines = insert(linesWithHeadTags, bodyIdx + 1, ...bodyTags);
+
+  const fileData = nextLines.join("\n");
+
+  fs.writeFile(filePath, fileData, function (err) {
+    if (err) {
+      return console.log(err);
+    }
+  });
 };
 
 const isHtmlExt = (fileName) => {
@@ -92,27 +103,46 @@ const isHtmlExt = (fileName) => {
   return fileName.match(htmlRegex);
 };
 
-const addClassAttrToTag = (classValue) => (tagStr) => {
+const addClassAttrToTag = (classValues) => (tagStr) => {
+  const classValue = classValues.join(" ");
   const classAttr = ` class=\"${classValue}\">`;
-  return tagStr.replace(new RegExp(/\>$/), classAttr);
+  return tagStr.replace(new RegExp(/\>$/, "i"), classAttr);
 };
 
 const isOpenBodyTag = (str) => {
-  const headTagRegex = /\<body/;
+  const headTagRegex = new RegExp(/\<body/, "i");
   return str.match(headTagRegex);
 };
 const isCloseHeadTag = (str) => {
-  const headTagRegex = /\<\/head\>/;
+  const headTagRegex = new RegExp(/\<\/head\>/, "i");
   return str.match(headTagRegex);
 };
 const isCloseBodyTag = (str) => {
-  const headTagRegex = /\<\/body\>/;
+  const headTagRegex = new RegExp(/\<\/body\>/, "i");
   return str.match(headTagRegex);
 };
 
-const buildStylesheetTag = (href) => {
-  return `<link rel="stylesheet" type="text/css" href="${href}">`;
+const buildTags = (depth) => {
+  const tailwindCSSLinkTag = buildStylesheetTag("tailwind.css", depth);
+  const clipboardScriptTag = buildScriptTag("clipboard.min.js", depth);
+  const indexScriptTag = buildScriptTag("index.js", depth);
+  const headTags = [tailwindCSSLinkTag, clipboardScriptTag];
+  const bodyTags = [indexScriptTag];
+  return [headTags, bodyTags];
 };
-const buildScriptTag = (href) => {
-  return `<script src="${href}"></script>`;
+
+const buildStylesheetTag = (href, depth) => {
+  const path = buildHrefPath(href, depth);
+  return `<link rel="stylesheet" type="text/css" href="${path}">`;
+};
+const buildScriptTag = (href, depth) => {
+  const path = buildHrefPath(href, depth);
+  return `<script src="${path}"></script>`;
+};
+const buildHrefPath = (href, depth) => {
+  return ["../".repeat(depth), href].join("");
+};
+
+const insert = (arr, index, ...newItems) => {
+  return [...arr.slice(0, index), ...newItems, ...arr.slice(index)];
 };
