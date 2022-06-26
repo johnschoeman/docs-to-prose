@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "./build.sh",
+    "build": "./bin/build.sh",
     "serve": "serve build"
   },
   "devDependencies": {
