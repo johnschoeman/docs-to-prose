@@ -1,19 +1,5 @@
-const clipboard = new ClipboardJS("pre, code", {
-  text: function (trigger) {
-    const value = trigger.innerHTML.trim();
-    return value;
-  },
-});
-
-clipboard.on("success", () => {
-  const div = document.createElement("div");
-  div.append("copied!");
-  div.id = "copied-flash";
-  div.classList.add("flash-message");
-  document.body.appendChild(div);
-
-  setTimeout(() => {
-    const div = document.getElementById("copied-flash");
-    div.remove();
-  }, 1500);
-});
+module.exports = function () {
+  console.log(
+    "Warning: You have imported docs-to-prose as module. This package is meant to be used a standalone cli only. Importing it as a module does nothing.",
+  )
+}
