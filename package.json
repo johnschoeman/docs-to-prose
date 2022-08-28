@@ -1,14 +1,26 @@
 {
+  "name": "docs-to-prose",
+  "main": "index.js",
+  "version": "0.0.0",
+  "author": "John Schoeman",
+  "license": "MIT",
+  "repository": "https://github.com/johnschoeman/docs-to-prose.git",
+  "homepage": "https://github.com/johnschoeman/docs-to-prose",
+  "bugs": "https://github.com/johnschoeman/docs-to-prose/issues",
+  "bin": {
+    "toprose": "lib/cli.js"
+  },
   "scripts": {
-    "build": "./build.sh",
-    "serve": "serve build"
+    "build": "bin/build.sh"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.2",
-    "serve": "^13.0.2",
-    "tailwindcss": "^3.1.3"
+    "prettier": "^2.7.1",
+    "serve": "^13.0.2"
   },
   "dependencies": {
-    "clipboard": "^2.0.11"
+    "@tailwindcss/typography": "^0.5.2",
+    "clipboard": "^2.0.11",
+    "esbuild": "^0.15.5",
+    "tailwindcss": "^3.1.3"
   }
 }
