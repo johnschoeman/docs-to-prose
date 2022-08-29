@@ -7,6 +7,7 @@
   "repository": "https://github.com/johnschoeman/docs-to-prose.git",
   "homepage": "https://github.com/johnschoeman/docs-to-prose",
   "bugs": "https://github.com/johnschoeman/docs-to-prose/issues",
+  "keywords": ["documentation", "docs", "html", "prose", "style"],
   "bin": {
     "toprose": "lib/cli.js"
   },
