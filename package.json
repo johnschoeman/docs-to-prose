@@ -1,14 +1,16 @@
 {
   "name": "docs-to-prose",
   "main": "index.js",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "John Schoeman",
   "license": "MIT",
   "repository": "https://github.com/johnschoeman/docs-to-prose.git",
   "homepage": "https://github.com/johnschoeman/docs-to-prose",
   "bugs": "https://github.com/johnschoeman/docs-to-prose/issues",
+  "keywords": ["documentation", "docs", "html", "prose", "style"],
   "bin": {
-    "toprose": "lib/cli.js"
+    "toprose": "lib/cli.js",
+    "docstoprose": "lib/cli.js"
   },
   "scripts": {
     "build": "bin/build.sh"
